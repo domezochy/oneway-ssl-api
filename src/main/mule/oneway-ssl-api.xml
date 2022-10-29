@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="dadd7686-4409-4570-a816-9e952b5dadcd" >
+		<http:listener-connection host="0.0.0.0" port="${https.port}" protocol="HTTPS">
+			<tls:context >
+				<tls:key-store type="pkcs12" path="secure/oneway-ssl-api.jks" alias="serverlocalhostkey" keyPassword="mulesoftmulesoft" password="mulesoftmulesoft" />
+			</tls:context>
+		</http:listener-connection>
+	</http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="ca5d8ebe-9a7c-4251-b39a-15f87c622d36" file="properties/dev-config.yaml" />
+	<flow name="oneway-ssl-apiFlow" doc:id="5c2ea947-4cd5-4f8e-84f0-255b88ca96ac" >
+		<http:listener doc:name="Listener" doc:id="b35d4d13-fa74-4160-9051-1bfc98ccb7fe" config-ref="HTTP_Listener_config" path="/onewayssl"/>
+		<ee:transform doc:name="Transform Message" doc:id="df72729a-f873-43ca-ae11-b14c647f1ceb" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	'message' : 'success - one way ssl'
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="06c97a01-f9c2-4ddf-bd12-7287eee25659" />
+	</flow>
+</mule>
